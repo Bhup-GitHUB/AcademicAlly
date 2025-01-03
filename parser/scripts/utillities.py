@@ -95,6 +95,7 @@ def count_merged_cells_along_row(ws, row, column):
             # if min_row == max_row:  # Ensure the merge is along a single row
             number_of_merged_cells_along_row = max_col - min_col + 1
             return number_of_merged_cells_along_row
+    return 0
     #         else:
     #             return f'The cell at row {row}, column {column} is merged, but not along a single row.'
     # return f'The cell at row {row}, column {column} is not part of any merged range.'
@@ -137,7 +138,7 @@ def parser(sheet, result):
                 skip_next = False
                 continue
 
-            subgroup = remove_whitespace(sheet.cell(row=7, column=y).value)
+            subgroup = remove_whitespace(sheet.cell(row=5, column=y).value)
 
             day = return_day(x)
             if (day is None):
@@ -164,7 +165,7 @@ def parser(sheet, result):
 
                 merged_cells_count = count_merged_cells_along_row(sheet, x, y)
                 for m in range(y, y + merged_cells_count, 2):
-                    subgroup = remove_whitespace(sheet.cell(row=7, column=m).value)
+                    subgroup = remove_whitespace(sheet.cell(row=5, column=m).value)
 
                     if type == 'L':
                         HandleLecture(sheet, x, y, subgroup, day, time, cell, result, merged_cells_map, room)
