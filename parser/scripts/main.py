@@ -12,9 +12,8 @@ def main():
     workbook = load_workbook('../utilities/Time Table(evenSem).xlsx')
     result = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
     for sheet in workbook.worksheets:
-        print(sheet.title)
-        if sheet.title == "2ND YEAR B":
-            parser(sheet, result)
+        print(f"------------------{sheet.title}----------")
+        parser(sheet, result)
 
 
     file_path = '../results(evenSem).json'
