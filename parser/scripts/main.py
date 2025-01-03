@@ -9,14 +9,15 @@ import sys
 from parser.scripts.utillities import parser
 
 def main():
-    workbook = load_workbook('../utilities/TimeTable[1].xlsx')
+    workbook = load_workbook('../utilities/Time Table(evenSem).xlsx')
     result = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
     for sheet in workbook.worksheets:
         print(sheet.title)
-        parser(sheet, result)
+        if sheet.title == "2ND YEAR B":
+            parser(sheet, result)
 
 
-    file_path = '../result(parsedOnly).json'
+    file_path = '../results(evenSem).json'
     with open(file_path, 'w') as file:
         json.dump(result, file, indent=4, separators=(',', ': '))
 
