@@ -95,7 +95,7 @@ def count_merged_cells_along_row(ws, row, column):
             # if min_row == max_row:  # Ensure the merge is along a single row
             number_of_merged_cells_along_row = max_col - min_col + 1
             return number_of_merged_cells_along_row
-    return 0
+    return 1
     #         else:
     #             return f'The cell at row {row}, column {column} is merged, but not along a single row.'
     # return f'The cell at row {row}, column {column} is not part of any merged range.'
