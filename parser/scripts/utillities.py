@@ -5,12 +5,10 @@ def get_merged_cells(sheet):
     min_rows_set = set()
     merged_cells = sheet.merged_cells.ranges
     for merged_range in merged_cells:
-        min_row, min_col, max_row, max_col = merged_range.bounds
-        if min_col <= 4 <= max_col:
-            top_left_cell = sheet.cell(row=min_col, column=min_row)
-            cell_value = top_left_cell.value
-            merged_cells_map[cell_value] = (min_row, max_row)
-            min_rows_set.add(min_row)
+        min_col, min_row, max_col, max_row = merged_range.bounds
+        top_left_cell_address = f"{get_column_letter(min_col)}{min_row}"
+        merged_cells_map[top_left_cell_address] = (min_col, max_col)
+        min_rows_set.add(min_row)
     return merged_cells_map, min_rows_set
 
 
@@ -85,16 +83,11 @@ def HandleTutorial(sheet, x, y, subgroup, day, time, cell, result,room):
     print(f"result[{subgroup}][{day}][{time}] = {cell}")
     return tVal
 
-def count_merged_cells_along_row(ws, row, column):
-    cell_address = f"{get_column_letter(column)}{row}"
-    cell = ws[cell_address]
-    for merged_range in ws.merged_cells.ranges:
-        if cell.coordinate in merged_range:
-
-            min_col, min_row, max_col, max_row = merged_range.bounds
-            # if min_row == max_row:  # Ensure the merge is along a single row
-            number_of_merged_cells_along_row = max_col - min_col + 1
-            return number_of_merged_cells_along_row
+def count_merged_cells_along_row(merged_cells_map, cell_address):
+    if cell_address in merged_cells_map:
+        min_row, max_row = merged_cells_map[cell_address]
+        number_of_merged_cells_along_row = max_row - min_row + 1
+        return number_of_merged_cells_along_row
     return 1
     #         else:
     #             return f'The cell at row {row}, column {column} is merged, but not along a single row.'
@@ -125,7 +118,7 @@ def HandleLecture(sheet, x, y, subgroup, day, time, cell, result, merged_cells_m
 
 
 def parser(sheet, result):
-    merged_cells_map = get_merged_cells(sheet)[0]
+    merged_cells_map, _ = get_merged_cells(sheet)
 
     row_size = sheet.max_row
     col_size = sheet.max_column
@@ -147,7 +140,7 @@ def parser(sheet, result):
             time = get_formatted_time(sheet, x, 4)
 
             cell = remove_whitespace(sheet.cell(row=x, column=y).value)
-
+            cell_address = f"{get_column_letter(y)}{x}"
             # Debug prints
             print(
                 f"Processing cell at row={x}, column={y} | subgroup: {subgroup} | time: {time} | day: {day} |  cell value: {cell}")
@@ -163,7 +156,7 @@ def parser(sheet, result):
                     print(room)
 
 
-                merged_cells_count = count_merged_cells_along_row(sheet, x, y)
+                merged_cells_count = count_merged_cells_along_row(merged_cells_map, cell_address)
                 for m in range(y, y + merged_cells_count, 2):
                     subgroup = remove_whitespace(sheet.cell(row=5, column=m).value)
 
