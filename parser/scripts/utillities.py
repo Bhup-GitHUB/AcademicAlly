@@ -89,9 +89,6 @@ def count_merged_cells_along_row(merged_cells_map, cell_address):
         number_of_merged_cells_along_row = max_row - min_row + 1
         return number_of_merged_cells_along_row
     return 1
-    #         else:
-    #             return f'The cell at row {row}, column {column} is merged, but not along a single row.'
-    # return f'The cell at row {row}, column {column} is not part of any merged range.'
 
 
 def HandleLecture(sheet, x, y, subgroup, day, time, cell, result, merged_cells_map,room):
@@ -100,6 +97,15 @@ def HandleLecture(sheet, x, y, subgroup, day, time, cell, result, merged_cells_m
     print(f"lectureGroup: {lectureGroup}")
     result[subgroup][day][time] = [cell, room]
     print(f"result[{subgroup}][{day}][{time}] = {cell}")
+    tVal = None
+    checker = sheet.cell(row=x + 2, column=y).value
+    if checker is not None and len(checker) <= 5:
+        # room = sheet.cell(row=x + 1, column=y).value + ' ' + sheet.cell(row=x + 2, column=y).value
+        time2 = get_formatted_time(sheet, x + 2, 4)
+        result[subgroup][day][time2] = [cell, room]
+        print(f"result[{subgroup}][{day}][{time2}] = {cell}")
+        tVal = 1
+    return tVal
 
     # try:
     #     rangeVal = merged_cells_map[lectureGroup]
@@ -138,9 +144,12 @@ def parser(sheet, result):
                 break
 
             time = get_formatted_time(sheet, x, 4)
+            cell_address = f"{get_column_letter(y)}{x}"
+            print(cell_address)
+            print(sheet.title)
 
             cell = remove_whitespace(sheet.cell(row=x, column=y).value)
-            cell_address = f"{get_column_letter(y)}{x}"
+            print(sheet.cell(row=x, column=y).value)
             # Debug prints
             print(
                 f"Processing cell at row={x}, column={y} | subgroup: {subgroup} | time: {time} | day: {day} |  cell value: {cell}")
@@ -152,7 +161,13 @@ def parser(sheet, result):
                 if type == 'L' or type =='T':
                     room = room = sheet.cell(row=x + 1, column=y).value
                 elif type == 'P':
-                    room = sheet.cell(row=x + 1, column=y).value + ' ' + sheet.cell(row=x + 2, column=y).value
+                    cellBelow = sheet.cell(row=x + 1, column=y)
+                    cellTwoBelow = sheet.cell(row=x + 2, column=y)
+
+                    valueBelow = cellBelow.value or ""
+                    valueTwoBelow = cellTwoBelow.value or ""
+
+                    room = f"{valueBelow} {valueTwoBelow}".strip()
                     print(room)
 
 
@@ -161,7 +176,9 @@ def parser(sheet, result):
                     subgroup = remove_whitespace(sheet.cell(row=5, column=m).value)
 
                     if type == 'L':
-                        HandleLecture(sheet, x, y, subgroup, day, time, cell, result, merged_cells_map, room)
+                        tVal = HandleLecture(sheet, x, y, subgroup, day, time, cell, result, merged_cells_map, room)
+                        if tVal is not None:
+                            skip_next = True
 
                     elif type == 'P':
                         HandlePractical(sheet, x, y, subgroup, day, time, cell, result, room)

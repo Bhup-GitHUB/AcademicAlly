@@ -9,10 +9,11 @@ import sys
 from parser.scripts.utillities import parser
 
 def main():
-    workbook = load_workbook('../utilities/Time Table(evenSem).xlsx')
+    workbook = load_workbook('../utilities/TIME TABLE(evenSem).xlsx')
     result = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
     for sheet in workbook.worksheets:
-        print(f"------------------{sheet.title}----------")
+        print(f"---------------------{sheet.title}-----------------")
+
         parser(sheet, result)
 
 

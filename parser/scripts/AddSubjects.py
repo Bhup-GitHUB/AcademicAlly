@@ -1,11 +1,11 @@
 import json
 
 def AddSubjectNames():
-    resultPath = '../result(parsedOnly).json'
+    resultPath = '../results(evenSem).json'
     with open(resultPath, 'r') as file:
         data = json.load(file)
     
-    subjectPath = 'subjects[1].json'
+    subjectPath = 'subjects(evenSem).json'
     with open(subjectPath, 'r') as file:
         subjects = json.load(file)
     
@@ -18,12 +18,18 @@ def AddSubjectNames():
 def Update(schedule, subjects):
     for day in schedule:
         for time, details in schedule[day].items():
-            subjectCode = details[0][:-1]
-            type = details[0][-1]
+            subjectCodes = details[0].split('/')
+            subjectNames = []
 
-            if subjectCode in subjects:
-                details.append(subjects[subjectCode])
-            
+            for code in subjectCodes:
+                subjectCode = code[:-1] if code[-1] in 'LTP' else code
+                if subjectCode in subjects:
+                    subjectNames.append(subjects[subjectCode])
+
+            if subjectNames:
+                details.append('/'.join(subjectNames))
+
+            type = details[0][-1]
             if type == 'L':
                 details.append('Lecture')
             elif type == 'T':

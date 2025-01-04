@@ -49,14 +49,14 @@ def extract_course_codes(json_data):
         for day, times in schedule.items():
             for time, details in times.items():
                 course_code = details[0]
-                if course_code[-1] in ["L", "T", "P"]:
-                    course_code = course_code[:-1]
-                course_codes.add(course_code)  # Add to set
+                for code in course_code.split('/'):
+                    subjectCode = code[:-1] if code[-1] in 'LTP' else code
+                    course_codes.add(subjectCode)
 
     return course_codes
 
 def main():
-    file_path = '../result.json'
+    file_path = '../results(evenSem).json'
 
     with open(file_path, 'r') as file:
         json_data = json.load(file)
@@ -69,7 +69,7 @@ def main():
 
     print(course_codes)
 
-    with open('subjects.json', 'w') as json_file:
+    with open('subjects(evenSem).json', 'w') as json_file:
         json.dump(courses, json_file, indent=4)
 
 if __name__ == "__main__":
