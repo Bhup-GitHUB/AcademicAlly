@@ -5,7 +5,7 @@ def AddSubjectNames():
     with open(resultPath, 'r') as file:
         data = json.load(file)
     
-    subjectPath = '../scripts/subjects(TIMETABLEJULYTODEC25).json'
+    subjectPath = '/subjects(TIMETABLEJULYTODEC25).json'
     with open(subjectPath, 'r') as file:
         subjects = json.load(file)
     
