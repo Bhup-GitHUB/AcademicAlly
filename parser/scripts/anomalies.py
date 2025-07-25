@@ -11,7 +11,7 @@ def findEmpty(data):
 def findIdentical(data):
     identicalKeys = []
     for key, value in data.items():
-        if value in (value, f"{value}"):
+        if key == value:
             identicalKeys.append(key)
 
     return identicalKeys
@@ -19,7 +19,7 @@ def findIdentical(data):
 
 
 def main():
-    filePath = '../scripts/subjects(TIMETABLEJULYTODEC25).json'
+    filePath = 'subjects(TIMETABLEJULYTODEC25).json'
     with open(filePath, 'r', encoding='utf-8') as file:
         data = json.load(file)
 
