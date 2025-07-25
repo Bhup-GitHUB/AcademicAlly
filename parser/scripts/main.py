@@ -9,7 +9,7 @@ import sys
 from parser.scripts.utillities import parser
 
 def main():
-    workbook = load_workbook('../utilities/TIME TABLE(evenSem).xlsx')
+    workbook = load_workbook('../utilities/TIMETABLEJULYTODEC25.xlsx')
     result = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
     for sheet in workbook.worksheets:
         print(f"---------------------{sheet.title}-----------------")
@@ -17,7 +17,7 @@ def main():
         parser(sheet, result)
 
 
-    file_path = '../results(evenSem).json'
+    file_path = '../resultsTIMETABLEJULYTODEC25.json'
     with open(file_path, 'w') as file:
         json.dump(result, file, indent=4, separators=(',', ': '))
 
