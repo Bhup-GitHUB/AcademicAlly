@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 FinalMap = {}
 
 def OldAndNew():
-    path = "../utilities/TIME TABLE(evenSem).xlsx"
+    path = "../utilities/TIMETABLEJULYTODEC25.xlsx"
     workbook = load_workbook(filename=path, data_only=True)
 
     def clean_value(value):
@@ -20,10 +20,11 @@ def OldAndNew():
 
         for col in range(1, sheet.max_column + 1):
             key = tutorialNames[col]
-            value = f"{tutorialNames[col]} / {practicalNames[col]}"
+            value = tutorialNames[col]
+            #value = f"{tutorialNames[col]} / {practicalNames[col]}"
             FinalMap[key] = value
 
-    with open('OldNew.json', 'w') as final:
+    with open('subgroup.json', 'w') as final:
         json.dump(FinalMap, final, indent=4)
 
 OldAndNew()
