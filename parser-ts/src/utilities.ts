@@ -199,10 +199,31 @@ export function parser(worksheet: ExcelJS.Worksheet, result: TimetableData): voi
     const rowSize = worksheet.rowCount;
     const colSize = worksheet.columnCount;
 
+    // Detect the starting row for class data (check if data starts on odd or even rows)
+    let startRow = 8; // Default
+    let foundDataRow = false;
+    
+    // Search for the first row with class data (code ending in L, T, or P)
+    // Start from row 8 since rows 5-7 are headers
+    for (let r = 8; r <= 20 && !foundDataRow; r++) {
+        for (let c = 5; c <= Math.min(colSize, 30); c++) {
+            const cellValue = worksheet.getCell(r, c).value?.toString();
+            if (cellValue) {
+                const type = getTypeOfClass(cellValue);
+                if (type === 'L' || type === 'T' || type === 'P') {
+                    startRow = r;
+                    foundDataRow = true;
+                    console.log(`Detected data starting row: ${startRow} (found ${cellValue} at row ${r}, col ${c})`);
+                    break;
+                }
+            }
+        }
+    }
+
     let skipNext = false;
 
     for (let y = 5; y <= colSize; y += 2) {
-        for (let x = 8; x <= rowSize; x += 2) {
+        for (let x = startRow; x <= rowSize; x += 2) {
             if (skipNext) {
                 skipNext = false;
                 continue;
@@ -269,4 +290,5 @@ export function parser(worksheet: ExcelJS.Worksheet, result: TimetableData): voi
         }
     }
 }
+
 
