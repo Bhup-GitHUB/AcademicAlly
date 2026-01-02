@@ -76,6 +76,23 @@ export function getTypeOfClass(s: string): ClassType | null {
     return null;
 }
 
+export function getSubjectName(subjectCode: string, subjectMap: { [key: string]: string }): string {
+    // Remove the L/T/P suffix to get the base code
+    const baseCode = ['L', 'T', 'P'].includes(subjectCode[subjectCode.length - 1])
+        ? subjectCode.slice(0, -1)
+        : subjectCode;
+    
+    // Return the subject name from the map, or the base code if not found
+    return subjectMap[baseCode] || baseCode;
+}
+
+export function getClassTypeName(type: ClassType | null): string {
+    if (type === 'L') return 'Lecture';
+    if (type === 'T') return 'Tutorial';
+    if (type === 'P') return 'Practical';
+    return '';
+}
+
 export function getFormattedTime(worksheet: ExcelJS.Worksheet, row: number, column: number): string {
     const cell = worksheet.getCell(row, column);
     let cellValue = cell.value;
@@ -119,13 +136,16 @@ export function handlePractical(
     time: string,
     cell: string,
     result: TimetableData,
-    room: string
+    room: string,
+    subjectMap: { [key: string]: string }
 ): void {
-    result[subgroup][day][time] = [cell, room];
+    const subjectName = getSubjectName(cell, subjectMap);
+    const classType = getClassTypeName('P');
+    result[subgroup][day][time] = [cell, room, subjectName, classType];
     console.log(`result[${subgroup}][${day}][${time}] = ${cell}`);
 
     const time2 = getFormattedTime(worksheet, x + 2, 4);
-    result[subgroup][day][time2] = [cell, room];
+    result[subgroup][day][time2] = [cell, room, subjectName, classType];
     console.log(`result[${subgroup}][${day}][${time2}] = ${cell}`);
 }
 
@@ -138,19 +158,22 @@ export function handleTutorial(
     time: string,
     cell: string,
     result: TimetableData,
-    room: string
+    room: string,
+    subjectMap: { [key: string]: string }
 ): number | null {
+    const subjectName = getSubjectName(cell, subjectMap);
+    const classType = getClassTypeName('T');
     let tVal: number | null = null;
     const checker = worksheet.getCell(x + 2, y).value?.toString();
     
     if (checker && checker.length <= 5) {
         const time2 = getFormattedTime(worksheet, x + 2, 4);
-        result[subgroup][day][time2] = [cell, room];
+        result[subgroup][day][time2] = [cell, room, subjectName, classType];
         console.log(`result[${subgroup}][${day}][${time2}] = ${cell}`);
         tVal = 1;
     }
 
-    result[subgroup][day][time] = [cell, room];
+    result[subgroup][day][time] = [cell, room, subjectName, classType];
     console.log(`result[${subgroup}][${day}][${time}] = ${cell}`);
     return tVal;
 }
@@ -173,12 +196,15 @@ export function handleLecture(
     cell: string,
     result: TimetableData,
     mergedCellsMap: MergedCellsMap,
-    room: string
+    room: string,
+    subjectMap: { [key: string]: string }
 ): number | null {
     const lectureGroup = worksheet.getCell(4, y).value;
     console.log(`lectureGroup: ${lectureGroup}`);
     
-    result[subgroup][day][time] = [cell, room];
+    const subjectName = getSubjectName(cell, subjectMap);
+    const classType = getClassTypeName('L');
+    result[subgroup][day][time] = [cell, room, subjectName, classType];
     console.log(`result[${subgroup}][${day}][${time}] = ${cell}`);
     
     let tVal: number | null = null;
@@ -186,7 +212,7 @@ export function handleLecture(
     
     if (checker && checker.length <= 5) {
         const time2 = getFormattedTime(worksheet, x + 2, 4);
-        result[subgroup][day][time2] = [cell, room];
+        result[subgroup][day][time2] = [cell, room, subjectName, classType];
         console.log(`result[${subgroup}][${day}][${time2}] = ${cell}`);
         tVal = 1;
     }
@@ -194,7 +220,7 @@ export function handleLecture(
     return tVal;
 }
 
-export function parser(worksheet: ExcelJS.Worksheet, result: TimetableData): void {
+export function parser(worksheet: ExcelJS.Worksheet, result: TimetableData, subjectMap: { [key: string]: string } = {}): void {
     const mergedCellsMap = getMergedCells(worksheet);
     const rowSize = worksheet.rowCount;
     const colSize = worksheet.columnCount;
@@ -272,15 +298,15 @@ export function parser(worksheet: ExcelJS.Worksheet, result: TimetableData): voi
                     }
 
                     if (type === 'L') {
-                        const tVal = handleLecture(worksheet, x, y, currentSubgroup, day, time, cell, result, mergedCellsMap, room);
+                        const tVal = handleLecture(worksheet, x, y, currentSubgroup, day, time, cell, result, mergedCellsMap, room, subjectMap);
                         if (tVal !== null) {
                             skipNext = true;
                         }
                     } else if (type === 'P') {
-                        handlePractical(worksheet, x, y, currentSubgroup, day, time, cell, result, room);
+                        handlePractical(worksheet, x, y, currentSubgroup, day, time, cell, result, room, subjectMap);
                         skipNext = true;
                     } else if (type === 'T') {
-                        const tVal = handleTutorial(worksheet, x, y, currentSubgroup, day, time, cell, result, room);
+                        const tVal = handleTutorial(worksheet, x, y, currentSubgroup, day, time, cell, result, room, subjectMap);
                         if (tVal !== null) {
                             skipNext = true;
                         }

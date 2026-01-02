@@ -77,3 +77,4 @@ Finds empty or missing subject names.
 - Normal - some subject codes may not exist in database
 - The scraper will continue and use the code as the name
 
+

@@ -84,3 +84,4 @@ Into:
 
 The TypeScript parser is **fully functional** and produces correct output matching the Python implementation. All core features are working as expected.
 
+

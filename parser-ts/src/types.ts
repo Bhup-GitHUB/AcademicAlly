@@ -9,7 +9,7 @@ export interface ClassDetails {
     classType?: 'Lecture' | 'Tutorial' | 'Practical';
 }
 
-export type TimeSlot = [string, string] | [string, string, string, string];
+export type TimeSlot = [string, string, string, string];
 
 export interface DaySchedule {
     [time: string]: TimeSlot;
@@ -34,4 +34,5 @@ export interface MergedCellsMap {
 export interface SubgroupMap {
     [key: string]: string;
 }
+
 

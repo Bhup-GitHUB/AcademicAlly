@@ -18,10 +18,21 @@ function countNonEmptyCells(worksheet: ExcelJS.Worksheet): number {
 async function main() {
     const workbookPath = path.join(__dirname, '../timetable.xlsx');
     const outputPath = path.join(__dirname, '../output/resultsTIMETABLEJANTOMAY26.json');
+    const subjectsPath = path.join(__dirname, '../output/subjects.json');
 
     console.log('Loading workbook...');
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(workbookPath);
+
+    // Load subjects map if it exists
+    let subjectMap: { [key: string]: string } = {};
+    try {
+        const subjectsContent = await fs.readFile(subjectsPath, 'utf-8');
+        subjectMap = JSON.parse(subjectsContent);
+        console.log('Loaded subjects map with', Object.keys(subjectMap).length, 'entries');
+    } catch (error) {
+        console.log('No subjects.json found, will use subject codes as names');
+    }
 
     const result: TimetableData = {};
 
@@ -46,7 +57,7 @@ async function main() {
     console.log('\nParsing deduplicated worksheets...');
     sheetMap.forEach((worksheet, normalizedName) => {
         console.log(`---------------------${normalizedName} (original: "${worksheet.name}")-----------------`);
-        parser(worksheet, result);
+        parser(worksheet, result, subjectMap);
     });
 
     console.log('Writing output...');
@@ -60,4 +71,5 @@ main().catch(error => {
     console.error('Error:', error);
     process.exit(1);
 });
+
 

@@ -102,7 +102,7 @@ function extractCourseCodes(jsonData: TimetableData): { courseCodes: Set<string>
 }
 
 async function main() {
-    const filePath = path.join(__dirname, '../../parser-ts/output/resultsTIMETABLEJULYTODEC25.json');
+    const filePath = path.join(__dirname, '../../parser-ts/output/resultsTIMETABLEJANTOMAY26.json');
     const outputPath = path.join(__dirname, '../../parser-ts/output/subjects.json');
 
     console.log('Reading timetable data...');
@@ -133,4 +133,5 @@ main().catch(error => {
     console.error('Error:', error);
     process.exit(1);
 });
+
 
