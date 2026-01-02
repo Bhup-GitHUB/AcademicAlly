@@ -1,0 +1,29 @@
+{
+  "name": "timetable-parser-ts",
+  "version": "1.0.0",
+  "description": "TypeScript implementation of Excel timetable parser",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node src/main.ts",
+    "parse": "ts-node src/main.ts",
+    "scrape": "ts-node src/subjectScraper.ts",
+    "enrich": "ts-node src/addSubjects.ts",
+    "check": "ts-node src/anomalies.ts"
+  },
+  "keywords": ["timetable", "parser", "excel"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
+
